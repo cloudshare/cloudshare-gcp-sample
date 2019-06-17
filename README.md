@@ -1,6 +1,6 @@
-# <img src="./images/cloudshare-logo.png" alt="drawing" width="32" style="vertical-align: middle;"/> cloudshare-gcp-sample
+# <img src="./images/cloudshare-logo.png" alt="drawing" width="32" style="vertical-align: middle;"/> CloudShare GCP Sample
 
-An Example of setting up a GCP project using Terraform script and bash script
+An Example of setting up a GCP project using a Terraform script and a bash script
 
 ## Assumptions
 * Project is attached to a billing account.
