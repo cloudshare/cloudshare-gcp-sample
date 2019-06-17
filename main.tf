@@ -1,13 +1,12 @@
-variable "project" {
-  default = "moshe-1"
-}
+# uncomment here to run locally
+# variable "project" {
+#   default = "REPLACE_WITH_YOUR_PROJECT"
+# }
 
-
-provider "google" {
-    zone    = "${var.zone}"
-    project = "${var.project}"
-}
-
+# provider "google" {
+#     zone    = "${var.zone}"
+#     project = "${var.project}"
+# }
 
 variable "region" {
   default = "us-central1"
@@ -69,15 +68,15 @@ resource "google_project_service" "enable_gke" {
   project                     = "${data.google_project.project.id}"
   service                     = "container.googleapis.com"
 
-  disable_dependent_services  = false
+  #disable_dependent_services  = false
   disable_on_destroy          = false
 }
 
 resource "google_container_cluster" "my_cluster" {
   name     = "echo-cloudshare"
-  location = "${var.region}"
+  zone = "${var.zone}"
 
-  initial_node_count = 2
+  initial_node_count = 1
 
   depends_on = [ "google_project_service.enable_gke" ]
 }
@@ -87,6 +86,17 @@ resource "google_container_cluster" "my_cluster" {
 #   name    = "ip-1"
 #   region  = "${var.region}"
 # }
+
+# these are the lines for the startup-script (written here for ease of use\read)
+locals {
+  line-0  = "#! /bin/bash"
+  line-1  = "echo ${local.fixed-key} > /creds.json"
+  line-2  = "gcloud config set account ${local.sa-email}"
+  line-3  = "gcloud auth activate-service-account ${local.sa-email} --key-file=/creds.json"
+  line-4  = "git clone ${local.git_repository_url}"
+  line-5  = "chmod -R 777 ./${var.git_repository_name}"
+  line-6  = "yes y | bash ./${var.git_repository_name}/main.sh ${var.instance_name} ${var.zone}"
+}
 
 resource "google_compute_instance" "worker_instance" {
   name          = "${var.instance_name}"
@@ -110,7 +120,7 @@ resource "google_compute_instance" "worker_instance" {
   }
   
   metadata {
-    startup-script = "#! /bin/bash\necho ${local.fixed-key} > /creds.json\ngcloud config set account ${local.sa-email}\ngcloud auth activate-service-account ${local.sa-email} --key-file=/creds.json\ngit clone ${local.git_repository_url}\nchmod -R 777 ./${var.git_repository_name}\nyes y | bash ./${var.git_repository_name}/main.sh ${var.instance_name}",
+    startup-script = "${local.line-0}\n${local.line-1}\n${local.line-2}\n${local.line-3}\n${local.line-4}\n${local.line-5}\n${local.line-6}",
     # adding this label to hide from viewer
     kube-labels = "cloud.google.com/gke-nodepool" 
   }
