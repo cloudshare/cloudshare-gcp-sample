@@ -32,4 +32,4 @@ When running `main.sh` script, you can pass parameters to it (see line 6 in `mai
 * Make sure `gcloud` is installed on the local machine, and GCP user is logged in (by running `gcloud auth login` or `gcloud init`).
 * Clone the repository to the local machine.
 * Uncomment the `variable "project"` and the `provider "google"` blocks under "uncomment here to run locally".
-* Replace the "REPLACE_WITH_YOUR_PROJECT" string inside the `variable "project"` block with your project ID.
+* In `main.tf`, replace the "REPLACE_WITH_YOUR_PROJECT" string inside the `variable "project"` block with your project ID.
